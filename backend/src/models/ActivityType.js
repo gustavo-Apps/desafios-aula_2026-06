@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require("sequelize");
-const { sequelize } = require("../config/database");
+import { DataTypes, Model } from "sequelize";
+import {sequelize} from "../Database/Connection.js";
 
 class ActivityType extends Model {}
 
@@ -40,4 +40,4 @@ ActivityType.init(
   }
 );
 
-module.exports = ActivityType;
+export default ActivityType;

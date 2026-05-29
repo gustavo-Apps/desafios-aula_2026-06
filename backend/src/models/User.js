@@ -1,14 +1,5 @@
-/**
- * Model: User
- *
- * Representa um usuário do sistema.
- * A senha nunca é retornada nas queries (defaultScope exclui password_hash).
- * O role "admin" terá acesso a funcionalidades futuras de gestão.
- */
-
-const { DataTypes, Model } = require("sequelize");
-const { sequelize } = require("../config/database");
-
+import {sequelize} from "../Database/Connection.js";
+import {DataTypes, Model} from "sequelize";
 class User extends Model {}
 
 User.init(
@@ -66,4 +57,4 @@ User.init(
   }
 );
 
-module.exports = User;
+export default User;

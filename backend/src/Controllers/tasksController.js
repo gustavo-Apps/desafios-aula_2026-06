@@ -1,10 +1,9 @@
-
+import { Task, User, ActivityType, TaskStatus } from "../models/index.js";
 // const asyncHandler = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
 
 const taskController = {
   getTasks: async (req, res) => {
-    // Logic to get tasks
-    const tasks = await taskService.getAllTasks(req.user.id); // Assuming tasks are user-specific
+    const tasks = await getAllTasks(req.user.id);
     res.json(tasks);
     return res.status(200).json(tasks);
   },
@@ -22,5 +21,16 @@ const taskController = {
     // Logic to delete a task
   },
 };
+
+async function getAllTasks(userId) {
+  const where = { userId };
+  Task.findAll({
+    where,
+    include: [
+      { model: ActivityType, as: "activityType" },
+      { model: TaskStatus, as: "taskStatus" },
+    ],
+  })
+}
 
 export default taskController;

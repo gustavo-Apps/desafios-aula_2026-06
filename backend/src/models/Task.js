@@ -1,16 +1,5 @@
-/**
- * Model: Task
- *
- * Representa uma atividade realizada pelo usuário em um dia específico.
- * Sempre vinculada a um WeeklyReport (calculado automaticamente pelo service).
- *
- * Campo azure_ticket_id: quando preenchido, dispara geração automática do título
- * "Testado Hoje" no service de criação.
- */
-
-const { DataTypes, Model } = require("sequelize");
-const { sequelize } = require("../config/database");
-
+import {DataTypes, Model} from "sequelize";
+import {sequelize} from "../Database/Connection.js";
 class Task extends Model {}
 
 Task.init(
@@ -86,4 +75,4 @@ Task.init(
   }
 );
 
-module.exports = Task;
+  export default Task;

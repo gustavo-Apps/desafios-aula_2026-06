@@ -1,15 +1,5 @@
-/**
- * Model: TaskStatus
- *
- * Status possíveis para uma tarefa (ex: Pendente, Em andamento, Concluído).
- * Modelado como tabela separada para permitir personalização sem ALTER TABLE.
- * Segue o mesmo padrão do ActivityType.
- *
- * Populado via seed com os valores padrão.
- */
-
-const { DataTypes, Model } = require("sequelize");
-const { sequelize } = require("../config/database");
+import { DataTypes, Model } from "sequelize";
+import {sequelize} from "../Database/Connection.js";
 
 class TaskStatus extends Model {}
 
@@ -52,11 +42,10 @@ TaskStatus.init(
     modelName: "TaskStatus",
     tableName: "task_statuses",
     underscored: true,
-    // Retorna sempre ordenado por sort_order
     defaultScope: {
       order: [["sort_order", "ASC"]],
     },
   }
 );
 
-module.exports = TaskStatus;
+export default TaskStatus;

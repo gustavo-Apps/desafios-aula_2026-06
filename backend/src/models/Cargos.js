@@ -1,11 +1,5 @@
-/**
- * Model: UserCargo
- *
- * Representa os cargos disponíveis para os usuários.
- */
-
-const { DataTypes, Model } = require("sequelize");
-const { sequelize } = require("../config/database");
+import { DataTypes, Model } from "sequelize";
+import {sequelize} from "../Database/Connection.js";
 
 class UserCargo extends Model {}
 
@@ -34,4 +28,4 @@ UserCargo.init(
   }
 );
 
-module.exports = UserCargo;
+export default UserCargo;
