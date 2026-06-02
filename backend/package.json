@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
   "keywords": [],
   "author": "",
@@ -19,6 +20,7 @@
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.22.4",
-    "sequelize": "^6.37.8"
+    "sequelize": "^6.37.8",
+    "ws": "^8.21.0"
   }
 }

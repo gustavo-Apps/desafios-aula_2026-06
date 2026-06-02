@@ -1,0 +1,12 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Frontend HTML puro - Desafio 1",
+  "scripts": {
+    "serve": "npx serve . -p 5500 --no-clipboard",
+    "dev": "npx serve . -p 5500 --no-clipboard"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

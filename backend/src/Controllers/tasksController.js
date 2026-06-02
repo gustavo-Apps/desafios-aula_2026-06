@@ -1,5 +1,6 @@
 import { where } from "sequelize";
 import { Task, ActivityType, TaskStatus } from "../models/index.js";
+import { broadcast } from "../websocket/ws.js";
 
 const taskController = {
   getTasks: async (req, res) => {
@@ -26,6 +27,7 @@ const taskController = {
   createTask: async (req, res) => {
     try {
       const result = await createTask(req.body, req.user.id);
+      broadcast('task:created', result);
       return res.status(201).json({ message: "Tarefa criada com sucesso.", task: result });
     } catch (error) {
       const status = error.message.includes("obrigatorio") ? 400 : 500;
@@ -36,6 +38,7 @@ const taskController = {
   updateTask: async (req, res) => {
     try {
       const result = await updateTask(req.params.id, req.body, req.user.id);
+      broadcast('task:updated', result);
       return res.status(200).json({ message: "Tarefa atualizada com sucesso.", task: result });
     } catch (error) {
       const status = error.message.includes("nao encontrada") ? 404 : 500;
@@ -46,6 +49,7 @@ const taskController = {
   deleteTask: async (req, res) => {
     try {
       await deleteTask(req.params.id, req.user.id);
+      broadcast('task:deleted', { id: Number(req.params.id) });
       return res.status(200).json({ message: "Tarefa removida com sucesso." });
     } catch (error) {
       const status = error.message.includes("nao encontrada") ? 404 : 500;

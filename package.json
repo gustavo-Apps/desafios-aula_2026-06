@@ -1,0 +1,15 @@
+{
+  "name": "desafio1",
+  "version": "1.0.0",
+  "description": "Gerenciador de tarefas - Desafio 1",
+  "scripts": {
+    "dev": "concurrently --kill-others --prefix-colors bgBlue,bgCyan --names \"BACK,FRONT\" \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "start": "concurrently --kill-others --prefix-colors bgBlue,bgCyan --names \"BACK,FRONT\" \"npm run start --prefix backend\" \"npm run serve --prefix frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

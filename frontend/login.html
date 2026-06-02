@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login — Task Manager</title>
+  <style>
+    /* ── Reset ── */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Tokens de cor ── */
+    :root {
+      --bg:        #111827;
+      --surface:   #1f2937;
+      --border:    #374151;
+      --text:      #f9fafb;
+      --text-muted:#9ca3af;
+      --primary:   #3b82f6;
+      --primary-h: #2563eb;
+      --input-bg:  #374151;
+      --success-bg:#064e3b;
+      --success-fg:#6ee7b7;
+      --error-bg:  #7f1d1d;
+      --error-fg:  #fca5a5;
+    }
+
+    body.light {
+      --bg:        #f3f4f6;
+      --surface:   #ffffff;
+      --border:    #d1d5db;
+      --text:      #111827;
+      --text-muted:#6b7280;
+      --input-bg:  #ffffff;
+      --success-bg:#d1fae5;
+      --success-fg:#065f46;
+      --error-bg:  #fee2e2;
+      --error-fg:  #991b1b;
+    }
+
+    body {
+      font-family: sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: var(--surface);
+      border-radius: 10px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      padding: 2rem;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    /* ── Topo do card ── */
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    h1 { font-size: 1.4rem; color: var(--text); }
+
+    /* ── Botao de tema ── */
+    .btn-theme {
+      background: var(--border);
+      border: none;
+      color: var(--text);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .btn-theme:hover { opacity: 0.8; }
+
+    /* ── Abas ── */
+    .tabs {
+      display: flex;
+      margin-bottom: 1.5rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .tab {
+      flex: 1;
+      padding: 0.6rem;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: color 0.2s;
+    }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* ── Formulario ── */
+    .form { display: none; flex-direction: column; gap: 1rem; }
+    .form.active { display: flex; }
+
+    label { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px; }
+
+    input {
+      width: 100%;
+      padding: 0.65rem 0.8rem;
+      background: var(--input-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 0.95rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--primary); }
+    input::placeholder { color: var(--text-muted); }
+
+    /* ── Botao submit ── */
+    button[type="submit"] {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 0.7rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button[type="submit"]:hover { background: var(--primary-h); }
+    button[type="submit"]:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* ── Mensagem ── */
+    .msg {
+      padding: 0.65rem 0.9rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      display: none;
+    }
+    .msg.success { background: var(--success-bg); color: var(--success-fg); display: block; }
+    .msg.error   { background: var(--error-bg);   color: var(--error-fg);   display: block; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-top">
+    <h1>Task Manager</h1>
+    <button class="btn-theme" id="btn-theme" onclick="toggleTheme()">Modo claro</button>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('login')">Entrar</div>
+    <div class="tab" onclick="switchTab('register')">Cadastrar</div>
+  </div>
+
+  <div id="msg" class="msg"></div>
+
+  <!-- Login -->
+  <form id="form-login" class="form active" onsubmit="handleLogin(event)">
+    <div>
+      <label for="login-username">Usuario</label>
+      <input id="login-username" type="text" placeholder="seu usuario" autocomplete="username" required />
+    </div>
+    <div>
+      <label for="login-password">Senha</label>
+      <input id="login-password" type="password" placeholder="sua senha" autocomplete="current-password" required />
+    </div>
+    <button type="submit" id="btn-login">Entrar</button>
+  </form>
+
+  <!-- Cadastro -->
+  <form id="form-register" class="form" onsubmit="handleRegister(event)">
+    <div>
+      <label for="reg-username">Usuario</label>
+      <input id="reg-username" type="text" placeholder="escolha um usuario" autocomplete="username" required />
+    </div>
+    <div>
+      <label for="reg-email">Email</label>
+      <input id="reg-email" type="email" placeholder="seu@email.com" autocomplete="email" required />
+    </div>
+    <div>
+      <label for="reg-password">Senha</label>
+      <input id="reg-password" type="password" placeholder="minimo 5 caracteres" autocomplete="new-password" required />
+    </div>
+    <button type="submit" id="btn-register">Criar conta</button>
+  </form>
+</div>
+
+<script>
+  const API = 'http://localhost:3001/api';
+
+  // Dark mode por padrao; light se explicitamente salvo
+  (function applyTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') {
+      document.body.classList.add('light');
+      document.getElementById('btn-theme').textContent = 'Modo escuro';
+    }
+    // dark e o default — sem classe extra necessaria
+  })();
+
+  function toggleTheme() {
+    const isLight = document.body.classList.toggle('light');
+    localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    document.getElementById('btn-theme').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+  }
+
+  if (localStorage.getItem('token')) window.location.href = 'tasks.html';
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.querySelectorAll('.form').forEach(f => f.classList.remove('active'));
+    document.getElementById(`form-${tab}`).classList.add('active');
+    clearMsg();
+  }
+
+  function showMsg(text, type) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = `msg ${type}`;
+  }
+
+  function clearMsg() {
+    const el = document.getElementById('msg');
+    el.textContent = '';
+    el.className = 'msg';
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-login');
+    btn.disabled = true; btn.textContent = 'Entrando...';
+    clearMsg();
+
+    try {
+      const res  = await fetch(`${API}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('login-username').value.trim(),
+          password: document.getElementById('login-password').value,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showMsg(data.error || 'Erro ao fazer login.', 'error'); return; }
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('username', data.user.username);
+      window.location.href = 'tasks.html';
+    } catch {
+      showMsg('Nao foi possivel conectar ao servidor.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Entrar';
+    }
+  }
+
+  async function handleRegister(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btn-register');
+    btn.disabled = true; btn.textContent = 'Criando conta...';
+    clearMsg();
+
+    const password = document.getElementById('reg-password').value;
+    if (password.length < 5) {
+      showMsg('A senha deve ter pelo menos 5 caracteres.', 'error');
+      btn.disabled = false; btn.textContent = 'Criar conta'; return;
+    }
+
+    try {
+      const res  = await fetch(`${API}/auth/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('reg-username').value.trim(),
+          email:    document.getElementById('reg-email').value.trim(),
+          password,
+          cargo: 2,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) { showMsg(data.error || 'Erro ao cadastrar.', 'error'); return; }
+      showMsg('Conta criada! Faca o login.', 'success');
+      document.getElementById('form-register').reset();
+      setTimeout(() => switchTab('login'), 1500);
+    } catch {
+      showMsg('Nao foi possivel conectar ao servidor.', 'error');
+    } finally {
+      btn.disabled = false; btn.textContent = 'Criar conta';
+    }
+  }
+</script>
+</body>
+</html>
