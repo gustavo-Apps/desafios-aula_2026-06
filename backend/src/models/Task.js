@@ -9,11 +9,6 @@ Task.init(
       primaryKey: true,
       autoIncrement: true,
     },
-    weekly_report_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: { model: "weekly_reports", key: "id" },
-    },
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -49,17 +44,6 @@ Task.init(
       type: DataTypes.INTEGER,
       allowNull: false,
       references: { model: "task_statuses", key: "id" },
-    },
-    // Link direto para o tópico no Discord relacionado à tarefa
-    discord_link: {
-      type: DataTypes.STRING(500),
-      allowNull: true,
-      validate: { isUrl: true },
-    },
-    // ID do ticket/caso de teste no Azure DevOps
-    azure_ticket_id: {
-      type: DataTypes.STRING(50),
-      allowNull: true,
     },
     // Campo livre para observações adicionais
     notes: {

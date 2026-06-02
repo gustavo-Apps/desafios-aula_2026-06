@@ -1,8 +1,9 @@
 import express from 'express';
 import tasksController from '../Controllers/tasksController.js';
+import authenticate from '../middleware/authenticate.js';
 
 const tasksRouter = express.Router();
-// router.use(authenticate);
+tasksRouter.use(authenticate);
 tasksRouter.use(express.json());
 
 tasksRouter.get('/', tasksController.getTasks);
