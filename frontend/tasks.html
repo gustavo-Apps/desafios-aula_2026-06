@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Tarefas — Task Manager</title>
   <style>
-    /* ── Reset ── */
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    /* ── Tokens de cor (dark por padrao) ── */
+    /* ── Tokens dark (padrao) ── */
     :root {
       --bg:         #111827;
       --surface:    #1f2937;
-      --surface2:   #111827;
       --border:     #374151;
       --text:       #f9fafb;
       --text-muted: #9ca3af;
@@ -44,7 +42,6 @@
     body.light {
       --bg:         #f3f4f6;
       --surface:    #ffffff;
-      --surface2:   #f9fafb;
       --border:     #d1d5db;
       --text:       #111827;
       --text-muted: #374151;
@@ -67,175 +64,110 @@
       --error-fg:   #991b1b;
       --info-bg:    #dbeafe;
       --info-fg:    #1e40af;
-      --modal-over: rgba(0,0,0,0.4);
-      --shadow:     0 1px 4px rgba(0,0,0,0.08);
+      --modal-over: rgba(0,0,0,0.35);
+      --shadow:     0 1px 4px rgba(0,0,0,0.1);
     }
 
-    body {
-      font-family: sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.2s, color 0.2s;
-    }
+    body { font-family: sans-serif; background: var(--bg); color: var(--text); transition: background 0.2s, color 0.2s; }
 
     /* ── Header ── */
-    header {
-      background: var(--primary-h);
-      color: #fff;
-      padding: 0.9rem 1.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+    header { background: var(--primary-h); color: #fff; padding: 0.9rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
     header h1 { font-size: 1.1rem; }
-    .header-actions { display: flex; align-items: center; gap: 0.6rem; }
-    .header-actions span { font-size: 0.9rem; opacity: 0.85; }
-    header button {
-      background: rgba(255,255,255,0.18);
-      border: none; color: #fff;
-      padding: 0.4rem 0.85rem;
-      border-radius: 5px; cursor: pointer; font-size: 0.85rem;
-    }
+    .header-right { display: flex; align-items: center; gap: 0.6rem; }
+    .header-right span { font-size: 0.9rem; opacity: 0.85; }
+    header button { background: rgba(255,255,255,0.18); border: none; color: #fff; padding: 0.4rem 0.85rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem; }
     header button:hover { background: rgba(255,255,255,0.32); }
 
-    /* ── WS badge ── */
-    #ws-status {
-      font-size: 0.75rem;
-      padding: 0.2rem 0.6rem;
-      border-radius: 99px;
-      font-weight: 600;
-      background: rgba(0,0,0,0.25);
-    }
-    #ws-status.connected { background: #065f46; color: #6ee7b7; }
-    #ws-status.disconnected { background: #7f1d1d; color: #fca5a5; }
+    #ws-badge { font-size: 0.72rem; padding: 0.2rem 0.6rem; border-radius: 99px; font-weight: 700; background: rgba(0,0,0,0.25); letter-spacing: 0.03em; }
+    #ws-badge.on  { background: #065f46; color: #6ee7b7; }
+    #ws-badge.off { background: #7f1d1d; color: #fca5a5; }
 
     /* ── Layout ── */
-    main { max-width: 920px; margin: 1.5rem auto; padding: 0 1rem; }
+    main { max-width: 960px; margin: 1.5rem auto; padding: 0 1rem; }
 
     /* ── Feedback ── */
-    .msg {
-      padding: 0.65rem 0.9rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      margin-bottom: 0.75rem;
-      display: none;
-    }
+    .msg { padding: 0.65rem 0.9rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 0.75rem; display: none; }
     .msg.success { background: var(--success-bg); color: var(--success-fg); display: block; }
     .msg.error   { background: var(--error-bg);   color: var(--error-fg);   display: block; }
     .msg.info    { background: var(--info-bg);    color: var(--info-fg);    display: block; }
 
     /* ── Filtros ── */
     .filters {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.75rem;
-      align-items: flex-end;
-      margin-bottom: 1rem;
+      background: var(--surface); border-radius: 8px; padding: 1rem;
+      box-shadow: var(--shadow); display: flex; flex-wrap: wrap;
+      gap: 0.75rem; align-items: flex-end; margin-bottom: 1rem;
     }
     .filters label { font-size: 0.8rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px; }
-    .filters input,
-    .filters select {
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.45rem 0.65rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
+    .filters input, .filters select {
+      background: var(--input-bg); border: 1px solid var(--border);
+      color: var(--text); padding: 0.45rem 0.65rem; border-radius: 6px; font-size: 0.9rem; outline: none;
     }
-    .filters input:focus,
-    .filters select:focus { border-color: var(--primary); }
+    .filters input:focus, .filters select:focus { border-color: var(--primary); }
 
-    /* ── Botoes genericos ── */
+    /* ── Botoes ── */
     .btn-primary   { background: var(--primary); color: #fff; border: none; border-radius: 6px; padding: 0.45rem 1rem; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
     .btn-primary:hover { background: var(--primary-h); }
     .btn-secondary { background: var(--btn-sec-bg); color: var(--btn-sec-fg); border: none; border-radius: 6px; padding: 0.45rem 1rem; cursor: pointer; font-size: 0.9rem; font-weight: 600; }
     .btn-secondary:hover { background: var(--btn-sec-h); }
 
-    /* ── Header da lista ── */
+    /* ── Section header ── */
     .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
     .section-header h2 { font-size: 1rem; color: var(--text-muted); }
 
     /* ── Formulario ── */
     .form-card {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 1.25rem;
-      box-shadow: var(--shadow);
-      margin-bottom: 1rem;
-      display: none;
-      flex-direction: column;
-      gap: 0.85rem;
+      background: var(--surface); border-radius: 8px; padding: 1.25rem;
+      box-shadow: var(--shadow); margin-bottom: 1rem;
+      display: none; flex-direction: column; gap: 0.85rem;
     }
     .form-card.open { display: flex; }
-
     .form-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
-    .form-row > div { flex: 1; min-width: 180px; }
-
+    .form-row > div { flex: 1; min-width: 160px; }
     .form-card label { font-size: 0.82rem; font-weight: 600; color: var(--text-muted); display: block; margin-bottom: 3px; }
-    .form-card input,
-    .form-card textarea,
-    .form-card select {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 0.5rem 0.7rem;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      outline: none;
-      font-family: inherit;
+    .form-card input, .form-card textarea, .form-card select {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--border);
+      color: var(--text); padding: 0.5rem 0.7rem; border-radius: 6px; font-size: 0.9rem; outline: none; font-family: inherit;
     }
-    .form-card input:focus,
-    .form-card textarea:focus,
-    .form-card select:focus { border-color: var(--primary); }
+    .form-card input:focus, .form-card textarea:focus, .form-card select:focus { border-color: var(--primary); }
     .form-card textarea { resize: vertical; min-height: 70px; }
-    .form-card input::placeholder,
-    .form-card textarea::placeholder { color: var(--text-dim); }
-
+    .form-card input::placeholder, .form-card textarea::placeholder { color: var(--text-dim); }
     .form-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
 
-    /* ── Lista de tarefas ── */
+    /* ── Lista ── */
     #task-list { display: flex; flex-direction: column; gap: 0.6rem; }
 
     .task-card {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 1rem;
-      box-shadow: var(--shadow);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1rem;
-      border-left: 4px solid var(--border);
-      transition: background 0.2s;
+      background: var(--surface); border-radius: 8px; padding: 1rem;
+      box-shadow: var(--shadow); display: flex; justify-content: space-between;
+      align-items: flex-start; gap: 1rem; border-left: 4px solid var(--border);
     }
-    .task-card.status-1 { border-left-color: #F59E0B; }
-    .task-card.status-2 { border-left-color: #3B82F6; }
-    .task-card.status-3 { border-left-color: #10B981; }
-    .task-card.status-4 { border-left-color: #EF4444; }
-    .task-card.status-5 { border-left-color: #6B7280; }
+    /* borda esquerda = status */
+    .task-card.s-1 { border-left-color: #F59E0B; }
+    .task-card.s-2 { border-left-color: #3B82F6; }
+    .task-card.s-3 { border-left-color: #10B981; }
+    .task-card.s-4 { border-left-color: #EF4444; }
+    .task-card.s-5 { border-left-color: #6B7280; }
 
     .task-info { flex: 1; }
-    .task-title { font-weight: 600; font-size: 0.97rem; margin-bottom: 0.25rem; color: var(--text); }
-    .task-desc  { font-size: 0.85rem; color: var(--text-muted); margin-top: 3px; }
-    .task-meta  { font-size: 0.8rem; color: var(--text-dim); display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.35rem; }
+    .task-title { font-weight: 600; font-size: 0.97rem; margin-bottom: 0.2rem; }
+    .task-desc  { font-size: 0.85rem; color: var(--text-muted); margin-top: 2px; }
+    .task-meta  { font-size: 0.8rem; color: var(--text-dim); display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.4rem; align-items: center; }
 
     .badge {
-      display: inline-block;
-      padding: 0.15rem 0.55rem;
-      border-radius: 99px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: var(--badge-bg);
-      color: var(--badge-fg);
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      padding: 0.15rem 0.55rem; border-radius: 99px; font-size: 0.75rem; font-weight: 600;
+      background: var(--badge-bg); color: var(--badge-fg);
     }
+    .badge .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; }
 
-    .task-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+    /* select de status inline no card */
+    .status-select {
+      background: var(--input-bg); border: 1px solid var(--border); color: var(--text);
+      border-radius: 5px; padding: 0.2rem 0.4rem; font-size: 0.78rem; cursor: pointer; outline: none;
+    }
+    .status-select:focus { border-color: var(--primary); }
+
+    .task-actions { display: flex; gap: 0.4rem; flex-shrink: 0; margin-top: 0.1rem; }
     .task-actions button { border: none; border-radius: 5px; padding: 0.35rem 0.7rem; font-size: 0.8rem; cursor: pointer; font-weight: 600; }
     .btn-edit   { background: var(--btn-edit-bg); color: var(--btn-edit-fg); }
     .btn-edit:hover { background: var(--btn-edit-h); }
@@ -245,20 +177,9 @@
     .empty { text-align: center; color: var(--text-dim); padding: 2.5rem; font-size: 0.95rem; }
 
     /* ── Modal ── */
-    .overlay {
-      position: fixed; inset: 0;
-      background: var(--modal-over);
-      display: none; align-items: center; justify-content: center;
-      z-index: 100;
-    }
+    .overlay { position: fixed; inset: 0; background: var(--modal-over); display: none; align-items: center; justify-content: center; z-index: 100; }
     .overlay.open { display: flex; }
-    .modal {
-      background: var(--surface);
-      border-radius: 8px;
-      padding: 1.5rem;
-      max-width: 360px; width: 90%;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.4);
-    }
+    .modal { background: var(--surface); border-radius: 8px; padding: 1.5rem; max-width: 360px; width: 90%; box-shadow: 0 4px 24px rgba(0,0,0,0.5); }
     .modal h3 { margin-bottom: 0.5rem; font-size: 1rem; color: var(--text); }
     .modal p  { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem; }
     .modal-actions { display: flex; gap: 0.6rem; justify-content: flex-end; }
@@ -271,8 +192,8 @@
 
 <header>
   <h1>Task Manager</h1>
-  <div class="header-actions">
-    <span id="ws-status" class="disconnected">WS</span>
+  <div class="header-right">
+    <span id="ws-badge" class="off">OFFLINE</span>
     <span id="header-user"></span>
     <button id="btn-theme" onclick="toggleTheme()">Modo claro</button>
     <button onclick="logout()">Sair</button>
@@ -294,14 +215,11 @@
     </div>
     <div>
       <label>Status</label>
-      <select id="filter-status">
-        <option value="">Todos</option>
-        <option value="1">Pendente</option>
-        <option value="2">Em andamento</option>
-        <option value="3">Concluido</option>
-        <option value="4">Bloqueado</option>
-        <option value="5">Cancelado</option>
-      </select>
+      <select id="filter-status"><option value="">Carregando...</option></select>
+    </div>
+    <div>
+      <label>Prioridade</label>
+      <select id="filter-priority"><option value="">Carregando...</option></select>
     </div>
     <div>
       <label>Ordenar por</label>
@@ -309,6 +227,8 @@
         <option value="task_date:DESC">Data (mais recente)</option>
         <option value="task_date:ASC">Data (mais antiga)</option>
         <option value="title:ASC">Titulo (A-Z)</option>
+        <option value="task_priority_id:DESC">Prioridade (maior)</option>
+        <option value="task_status_id:ASC">Status</option>
       </select>
     </div>
     <button class="btn-primary" onclick="loadTasks()">Filtrar</button>
@@ -321,9 +241,9 @@
     <button class="btn-primary" onclick="toggleForm()">+ Nova tarefa</button>
   </div>
 
-  <!-- Formulario -->
+  <!-- Formulario de criacao / edicao -->
   <div class="form-card" id="task-form-card">
-    <strong id="form-title" style="font-size:0.95rem;color:var(--text);">Nova tarefa</strong>
+    <strong id="form-title" style="font-size:0.95rem;">Nova tarefa</strong>
 
     <div class="form-row">
       <div>
@@ -331,8 +251,12 @@
         <input type="text" id="f-title" placeholder="O que precisa ser feito?" />
       </div>
       <div>
-        <label>Data</label>
+        <label>Data inicio</label>
         <input type="date" id="f-date" />
+      </div>
+      <div>
+        <label>Data fim</label>
+        <input type="date" id="f-end-date" />
       </div>
     </div>
 
@@ -344,35 +268,36 @@
     <div class="form-row">
       <div>
         <label>Status</label>
-        <select id="f-status">
-          <option value="1">Pendente</option>
-          <option value="2">Em andamento</option>
-          <option value="3">Concluido</option>
-          <option value="4">Bloqueado</option>
-          <option value="5">Cancelado</option>
-        </select>
+        <select id="f-status"><option value="">Carregando...</option></select>
+      </div>
+      <div>
+        <label>Prioridade</label>
+        <select id="f-priority"><option value="">Carregando...</option></select>
       </div>
       <div>
         <label>Tipo de atividade</label>
-        <select id="f-activity">
-          <option value="1">Padrao</option>
-        </select>
+        <select id="f-activity"><option value="">Carregando...</option></select>
       </div>
+    </div>
+
+    <div>
+      <label>Notas internas</label>
+      <textarea id="f-notes" placeholder="Observacoes adicionais (opcional)"></textarea>
     </div>
 
     <div class="form-actions">
       <button class="btn-secondary" onclick="cancelForm()">Cancelar</button>
-      <button class="btn-primary" onclick="submitForm()">Salvar</button>
+      <button id="f-btn-save-task" class="btn-primary" onclick="submitForm()">Salvar</button>
     </div>
   </div>
 
-  <!-- Lista -->
+  <!-- Lista de tarefas -->
   <div id="task-list">
     <div class="empty">Carregando tarefas...</div>
   </div>
 </main>
 
-<!-- Modal de confirmacao -->
+<!-- Modal de confirmacao de exclusao -->
 <div class="overlay" id="confirm-overlay">
   <div class="modal">
     <h3>Excluir tarefa</h3>
@@ -388,25 +313,23 @@
   const API    = 'http://localhost:3001/api';
   const WS_URL = 'ws://localhost:3001';
 
-  // ── Autenticacao ──
+  // ── Auth ──
   const token = localStorage.getItem('token');
   if (!token) window.location.href = 'login.html';
   document.getElementById('header-user').textContent = localStorage.getItem('username') || '';
 
-  // ── Tema (dark por padrao) ──
-  (function applyTheme() {
+  // ── Tema (dark padrao) ──
+  (function() {
     if (localStorage.getItem('theme') === 'light') {
       document.body.classList.add('light');
       document.getElementById('btn-theme').textContent = 'Modo escuro';
     }
   })();
-
   function toggleTheme() {
-    const isLight = document.body.classList.toggle('light');
-    localStorage.setItem('theme', isLight ? 'light' : 'dark');
-    document.getElementById('btn-theme').textContent = isLight ? 'Modo escuro' : 'Modo claro';
+    const light = document.body.classList.toggle('light');
+    localStorage.setItem('theme', light ? 'light' : 'dark');
+    document.getElementById('btn-theme').textContent = light ? 'Modo escuro' : 'Modo claro';
   }
-
   function logout() { localStorage.clear(); window.location.href = 'login.html'; }
   function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }; }
 
@@ -414,80 +337,86 @@
   let editingId  = null;
   let deletingId = null;
 
+  // Maps preenchidos pela API (lookup)
+  let STATUS_MAP   = {};
+  let PRIORITY_MAP = {};
+
   // ── WebSocket ──
-  // Explicacao: o servidor manda eventos quando alguem cria/edita/deleta uma tarefa.
-  // O frontend escuta esses eventos e recarrega a lista automaticamente.
-  // Isso evita ter que ficar dando F5 manualmente.
   let ws = null;
-
-  function connectWebSocket() {
+  function connectWS() {
     ws = new WebSocket(WS_URL);
-    const badge = document.getElementById('ws-status');
-
-    ws.onopen = () => {
-      badge.textContent = 'AO VIVO';
-      badge.className = 'connected';
-      console.log('[WS] Conectado.');
-    };
-
-    ws.onmessage = (event) => {
-      // Recebe: { event: 'task:created' | 'task:updated' | 'task:deleted', data: ... }
-      const { event: evtName } = JSON.parse(event.data);
-
-      if (['task:created', 'task:updated', 'task:deleted'].includes(evtName)) {
-        // Recarrega a lista silenciosamente (sem flash de "Carregando...")
-        loadTasks(true);
-      }
-    };
-
-    ws.onerror = () => {
-      badge.textContent = 'OFFLINE';
-      badge.className = 'disconnected';
-    };
-
-    ws.onclose = () => {
-      badge.textContent = 'OFFLINE';
-      badge.className = 'disconnected';
-      // Tenta reconectar apos 3 segundos
-      setTimeout(connectWebSocket, 3000);
+    const badge = document.getElementById('ws-badge');
+    ws.onopen    = () => { badge.textContent = 'AO VIVO'; badge.className = 'on'; };
+    ws.onerror   = () => { badge.textContent = 'OFFLINE'; badge.className = 'off'; };
+    ws.onclose   = () => { badge.textContent = 'OFFLINE'; badge.className = 'off'; setTimeout(connectWS, 3000); };
+    ws.onmessage = (e) => {
+      const { event } = JSON.parse(e.data);
+      if (['task:created','task:updated','task:deleted'].includes(event)) loadTasks(true);
     };
   }
 
   // ── Feedback ──
   function showMsg(text, type) {
     const el = document.getElementById('msg');
-    el.textContent = text;
-    el.className = `msg ${type}`;
+    el.textContent = text; el.className = `msg ${type}`;
     if (type !== 'error') setTimeout(() => { el.className = 'msg'; }, 3000);
   }
 
-  // ── Tarefas ──
+  // ── Lookup: busca activity_types, statuses e priorities da API ──
+  async function loadLookup() {
+    try {
+      const res  = await fetch(`${API}/lookup`, { headers: authHeaders() });
+      const data = await res.json();
+      if (!res.ok) return;
+
+      // Monta os maps de status e prioridade para uso na renderizacao
+      data.taskStatuses.forEach(s => { STATUS_MAP[s.id]   = { name: s.name, color: s.color }; });
+      data.taskPriorities.forEach(p => { PRIORITY_MAP[p.id] = { name: p.name, color: p.color }; });
+
+      // Popula selects de filtro e formulario com dados reais
+      populateSelect('filter-status',   data.taskStatuses,   'Todos',          false);
+      populateSelect('filter-priority', data.taskPriorities, 'Todas',          false);
+      populateSelect('f-status',        data.taskStatuses,   null,             false);
+      populateSelect('f-priority',      data.taskPriorities, 'Sem prioridade', true);
+      populateSelect('f-activity',      data.activityTypes,  null,             false);
+
+    } catch {
+      showMsg('Erro ao carregar dados de referencia.', 'error');
+    }
+  }
+
+  // Preenche um <select> com os itens retornados pela API
+  // firstBlank = true adiciona uma opcao vazia no inicio
+  function populateSelect(id, items, blankLabel, firstBlank) {
+    const el = document.getElementById(id);
+    el.innerHTML = '';
+    if (blankLabel) el.innerHTML = `<option value="">${blankLabel}</option>`;
+    items.forEach(item => {
+      el.innerHTML += `<option value="${item.id}">${item.name}</option>`;
+    });
+  }
+
+  // ── Carregar tarefas ──
   async function loadTasks(silent = false) {
-    const from   = document.getElementById('filter-from').value;
-    const to     = document.getElementById('filter-to').value;
-    const status = document.getElementById('filter-status').value;
-    const order  = document.getElementById('filter-order').value;
+    const from     = document.getElementById('filter-from').value;
+    const to       = document.getElementById('filter-to').value;
+    const status   = document.getElementById('filter-status').value;
+    const priority = document.getElementById('filter-priority').value;
+    const order    = document.getElementById('filter-order').value;
 
     const params = new URLSearchParams();
-    if (status) params.set('task_status_id', status);
-    if (order)  params.set('order_by', order);
+    if (status)   params.set('task_status_id',   status);
+    if (priority) params.set('task_priority_id', priority);
+    if (order)    params.set('order_by', order);
 
-    if (!silent) {
-      document.getElementById('task-list').innerHTML = '<div class="empty">Carregando...</div>';
-    }
+    if (!silent) document.getElementById('task-list').innerHTML = '<div class="empty">Carregando...</div>';
 
     try {
       const res  = await fetch(`${API}/tasks?${params}`, { headers: authHeaders() });
       const data = await res.json();
-
-      if (!res.ok) {
-        if (res.status === 401) { logout(); return; }
-        showMsg(data.error || 'Erro ao carregar tarefas.', 'error');
-        return;
-      }
+      if (!res.ok) { if (res.status === 401) logout(); showMsg(data.error || 'Erro ao carregar.', 'error'); return; }
 
       let tasks = data.tasks;
-      // Filtro de data no frontend (simples, sem alterar backend)
       if (from) tasks = tasks.filter(t => t.task_date >= from);
       if (to)   tasks = tasks.filter(t => t.task_date <= to);
 
@@ -498,31 +427,37 @@
   }
 
   function clearFilters() {
-    document.getElementById('filter-from').value   = '';
-    document.getElementById('filter-to').value     = '';
-    document.getElementById('filter-status').value = '';
-    document.getElementById('filter-order').value  = 'task_date:DESC';
+    ['filter-from','filter-to','filter-status','filter-priority'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('filter-order').value = 'task_date:DESC';
     loadTasks();
   }
 
+  // ── Renderizar ──
   function renderTasks(tasks) {
     const list = document.getElementById('task-list');
-    if (!tasks.length) {
-      list.innerHTML = '<div class="empty">Nenhuma tarefa encontrada.</div>';
-      return;
-    }
+    if (!tasks.length) { list.innerHTML = '<div class="empty">Nenhuma tarefa encontrada.</div>'; return; }
 
     list.innerHTML = tasks.map(t => {
-      const status = t.taskStatus || {};
-      const date   = t.task_date ? formatDate(t.task_date) : '—';
+      const st = STATUS_MAP[t.task_status_id]   || {};
+      const pr = PRIORITY_MAP[t.task_priority_id] || null;
+      const date = t.task_date ? fmtDate(t.task_date) : '—';
+
+      // opcoes do select de status inline
+      const statusOptions = Object.entries(STATUS_MAP).map(([id, s]) =>
+        `<option value="${id}" ${Number(id) === t.task_status_id ? 'selected' : ''}>${s.name}</option>`
+      ).join('');
+
       return `
-        <div class="task-card status-${t.task_status_id}">
+        <div class="task-card s-${t.task_status_id}" id="card-${t.id}">
           <div class="task-info">
             <div class="task-title">${esc(t.title)}</div>
             ${t.description ? `<div class="task-desc">${esc(t.description)}</div>` : ''}
             <div class="task-meta">
               <span>Data: ${date}</span>
-              ${status.name ? `<span class="badge">${esc(status.name)}</span>` : ''}
+              ${pr ? `<span class="badge"><span class="dot" style="background:${pr.color}"></span>${pr.name}</span>` : ''}
+              <select class="status-select" onchange="quickStatus(${t.id}, this.value, this)" title="Mudar status">
+                ${statusOptions}
+              </select>
             </div>
           </div>
           <div class="task-actions">
@@ -533,15 +468,39 @@
     }).join('');
   }
 
+  // Muda status direto do card sem abrir o formulario
+  async function quickStatus(taskId, newStatusId, selectEl) {
+    try {
+      const res  = await fetch(`${API}/tasks/${taskId}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify({ task_status_id: newStatusId }),
+      });
+      if (!res.ok) { showMsg('Erro ao atualizar status.', 'error'); return; }
+
+      // Atualiza a borda do card imediatamente (sem esperar WS)
+      const card = document.getElementById(`card-${taskId}`);
+      if (card) {
+        card.className = card.className.replace(/s-\d/, `s-${newStatusId}`);
+      }
+      showMsg('Status atualizado.', 'success');
+      // WS vai recarregar a lista em seguida
+      if (!ws || ws.readyState !== WebSocket.OPEN) loadTasks(true);
+    } catch {
+      showMsg('Erro ao salvar status.', 'error');
+    }
+  }
+
   // ── Formulario ──
   function toggleForm() {
     editingId = null;
-    document.getElementById('form-title').textContent  = 'Nova tarefa';
-    document.getElementById('f-title').value           = '';
-    document.getElementById('f-description').value     = '';
-    document.getElementById('f-status').value          = '1';
-    document.getElementById('f-activity').value        = '1';
-    document.getElementById('f-date').value            = new Date().toISOString().split('T')[0];
+    document.getElementById('form-title').textContent = 'Nova tarefa';
+    ['f-title','f-description','f-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-date').value     = today();
+    document.getElementById('f-end-date').value = '';
+    document.getElementById('f-status').value   = '1';
+    document.getElementById('f-priority').value = '';
+    document.getElementById('f-activity').value = '1';
     const card = document.getElementById('task-form-card');
     card.classList.toggle('open');
     if (card.classList.contains('open')) document.getElementById('f-title').focus();
@@ -556,51 +515,50 @@
     try {
       const res  = await fetch(`${API}/tasks/${id}`, { headers: authHeaders() });
       const data = await res.json();
-      if (!res.ok) { showMsg(data.error || 'Erro ao buscar tarefa.', 'error'); return; }
-
+      if (!res.ok) { showMsg(data.error || 'Erro ao buscar.', 'error'); return; }
       const t = data.task;
       editingId = id;
       document.getElementById('form-title').textContent = 'Editar tarefa';
       document.getElementById('f-title').value          = t.title;
       document.getElementById('f-description').value    = t.description || '';
+      document.getElementById('f-notes').value          = t.notes || '';
       document.getElementById('f-date').value           = t.task_date || '';
+      document.getElementById('f-end-date').value       = t.task_end_date || '';
       document.getElementById('f-status').value         = t.task_status_id;
+      document.getElementById('f-priority').value       = t.task_priority_id || '';
       document.getElementById('f-activity').value       = t.activity_type_id;
       document.getElementById('task-form-card').classList.add('open');
       document.getElementById('f-title').focus();
-    } catch {
-      showMsg('Nao foi possivel carregar a tarefa.', 'error');
-    }
+      document.getElementById('f-btn-save-task').textContent = 'Atualizar';
+
+    } catch { showMsg('Nao foi possivel carregar a tarefa.', 'error'); }
   }
 
   async function submitForm() {
     const title          = document.getElementById('f-title').value.trim();
     const description    = document.getElementById('f-description').value.trim();
+    const notes          = document.getElementById('f-notes').value.trim();
     const task_date      = document.getElementById('f-date').value;
+    const task_end_date  = document.getElementById('f-end-date').value;
     const task_status_id     = document.getElementById('f-status').value;
+    const task_priority_id   = document.getElementById('f-priority').value || null;
     const activity_type_id   = document.getElementById('f-activity').value;
 
     if (!title) { showMsg('O titulo e obrigatorio.', 'error'); return; }
 
+    const body = { title, description, notes, task_date, task_end_date: task_end_date || null,
+                   task_status_id, task_priority_id, activity_type_id };
+
     try {
       const url    = editingId ? `${API}/tasks/${editingId}` : `${API}/tasks`;
       const method = editingId ? 'PUT' : 'POST';
-      const res    = await fetch(url, {
-        method,
-        headers: authHeaders(),
-        body: JSON.stringify({ title, description, task_date, task_status_id, activity_type_id }),
-      });
-      const data = await res.json();
-      if (!res.ok) { showMsg(data.error || 'Erro ao salvar tarefa.', 'error'); return; }
-
+      const res    = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(body) });
+      const data   = await res.json();
+      if (!res.ok) { showMsg(data.error || 'Erro ao salvar.', 'error'); return; }
       showMsg(editingId ? 'Tarefa atualizada com sucesso!' : 'Tarefa criada com sucesso!', 'success');
       cancelForm();
-      // Nao precisa chamar loadTasks() — o WebSocket vai disparar o reload automaticamente.
-      // Mas se WS estiver offline, recarregamos por garantia:
       if (!ws || ws.readyState !== WebSocket.OPEN) loadTasks();
-    } catch {
-      showMsg('Nao foi possivel salvar a tarefa.', 'error');
-    }
+    } catch { showMsg('Nao foi possivel salvar a tarefa.', 'error'); }
   }
 
   // ── Exclusao ──
@@ -610,34 +568,24 @@
   async function confirmDelete() {
     if (!deletingId) return;
     try {
-      const res  = await fetch(`${API}/tasks/${deletingId}`, { method: 'DELETE', headers: authHeaders() });
-      const data = await res.json();
-      if (!res.ok) { showMsg(data.error || 'Erro ao excluir.', 'error'); closeConfirm(); return; }
+      const res = await fetch(`${API}/tasks/${deletingId}`, { method: 'DELETE', headers: authHeaders() });
+      if (!res.ok) { const d = await res.json(); showMsg(d.error || 'Erro ao excluir.', 'error'); closeConfirm(); return; }
       showMsg('Tarefa excluida com sucesso!', 'success');
       closeConfirm();
       if (!ws || ws.readyState !== WebSocket.OPEN) loadTasks();
-    } catch {
-      showMsg('Nao foi possivel excluir a tarefa.', 'error');
-      closeConfirm();
-    }
+    } catch { showMsg('Nao foi possivel excluir.', 'error'); closeConfirm(); }
   }
 
   // ── Helpers ──
-  function formatDate(d) {
-    if (!d) return '—';
-    const [y, m, day] = d.split('-');
-    return `${day}/${m}/${y}`;
+  function today() { return new Date().toISOString().split('T')[0]; }
+  function fmtDate(d) { const [y,m,day] = d.split('-'); return `${day}/${m}/${y}`; }
+  function esc(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  function esc(str) {
-    return String(str)
-      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  // ── Inicializa ──
-  connectWebSocket();
-  loadTasks();
+  // ── Init ──
+  connectWS();
+  loadLookup().then(() => loadTasks());
 </script>
 </body>
 </html>
