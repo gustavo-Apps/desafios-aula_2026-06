@@ -19,6 +19,12 @@ Task.init(
       allowNull: false,
       references: { model: "activity_types", key: "id" },
     },
+    task_priority_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1, 
+      references: { model: "task_priorities", key: "id" },
+    },
     // Título curto da atividade
     title: {
       type: DataTypes.STRING(200),

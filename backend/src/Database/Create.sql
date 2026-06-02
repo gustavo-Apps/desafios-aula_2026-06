@@ -4,10 +4,23 @@ DROP TABLE IF EXISTS `activity_types`;
 DROP TABLE IF EXISTS `sequelizemeta`;
 DROP TABLE IF EXISTS `task_statuses`;
 DROP TABLE IF EXISTS `tasks`;
+DROP TABLE IF EXISTS `task_priorities`;
 DROP TABLE IF EXISTS `user_cargos`;
 DROP TABLE IF EXISTS `users`;
 DROP TABLE IF EXISTS `users-`;
 DROP TABLE IF EXISTS `weekly_reports`;
+
+CREATE TABLE `task_priorities` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#6B7280',
+  `sort_order` int(11) DEFAULT 0,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
+  PRIMARY KEY (`id`)
+);
 
 CREATE TABLE `activity_types` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -15,10 +28,14 @@ CREATE TABLE `activity_types` (
   `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#6B7280',
   `is_active` tinyint(1) DEFAULT 1,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`)
 );
+
+CREATE TRIGGER `activity_types_updated_at`
+BEFORE UPDATE ON `activity_types`
+FOR EACH ROW SET NEW.`updated_at` = NOW();
 
 CREATE TABLE `task_statuses` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -27,40 +44,59 @@ CREATE TABLE `task_statuses` (
   `color` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT '#6B7280',
   `sort_order` int(11) DEFAULT 0,
   `is_active` tinyint(1) DEFAULT 1,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`)
 );
+
+CREATE TRIGGER `task_statuses_updated_at`
+BEFORE UPDATE ON `task_statuses`
+FOR EACH ROW SET NEW.`updated_at` = NOW();
+
+CREATE TRIGGER `task_priorities_updated_at`
+BEFORE UPDATE ON `task_priorities`
+FOR EACH ROW SET NEW.`updated_at` = NOW();
 
 CREATE TABLE `tasks` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) NOT NULL,
   `activity_type_id` int(11) NOT NULL,
+  `task_priority_id` int(11) DEFAULT NULL,
   `title` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `task_date` date NOT NULL,
+  `task_date` date NOT NULL DEFAULT (CURDATE()),
   `task_status_id` int(11) NOT NULL,
   `notes` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
   `task_end_date` date DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `activity_type_id` (`activity_type_id`),
   KEY `task_status_id` (`task_status_id`),
+  KEY `task_priority_id` (`task_priority_id`),
   CONSTRAINT `tasks_ibfk_182` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `tasks_ibfk_183` FOREIGN KEY (`activity_type_id`) REFERENCES `activity_types` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `tasks_ibfk_184` FOREIGN KEY (`task_status_id`) REFERENCES `task_statuses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `tasks_ibfk_184` FOREIGN KEY (`task_status_id`) REFERENCES `task_statuses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `tasks_ibfk_185` FOREIGN KEY (`task_priority_id`) REFERENCES `task_priorities` (`id`) ON DELETE SET NULL ON UPDATE CASCADE
 );
+
+CREATE TRIGGER `tasks_updated_at`
+BEFORE UPDATE ON `tasks`
+FOR EACH ROW SET NEW.`updated_at` = NOW();
 
 CREATE TABLE `user_cargos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `description` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
   `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 );
+
+CREATE TRIGGER `user_cargos_updated_at`
+BEFORE UPDATE ON `user_cargos`
+FOR EACH ROW SET NEW.`updated_at` = NOW();
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -70,8 +106,8 @@ CREATE TABLE `users` (
   `role` enum('user','admin') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'user',
   `cargo` int(11) DEFAULT NULL,
   `is_active` tinyint(1) DEFAULT 1,
-  `created_at` datetime NOT NULL,
-  `updated_at` datetime NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT NOW(),
+  `updated_at` datetime NOT NULL DEFAULT NOW(),
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`),
   UNIQUE KEY `email` (`email`),

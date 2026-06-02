@@ -2,7 +2,6 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import User from '../models/User.js';
-import { or } from 'sequelize';
 
 const authController = {
   login: async (req, res) => {
@@ -28,7 +27,11 @@ const authController = {
         { expiresIn: '8h' }
       );
 
-      return res.status(200).json({ token });
+      return res.status(200).json({
+        message: "Login realizado com sucesso.",
+        token,
+        user: { id: user.id, username: user.username, role: user.role },
+      });
 
     } catch (error) {
       return res.status(500).json({ error: 'Erro interno.', details: error.message });
@@ -51,7 +54,10 @@ const authController = {
       // 3. Cria o usuário no banco
       const user = await User.create({ username, password_hash, email, role, cargo });
 
-      return res.status(201).json({ id: user.id, username: user.username });
+      return res.status(201).json({
+        message: "Usuario criado com sucesso.",
+        user: { id: user.id, username: user.username, email: user.email, role: user.role },
+      });
 
     } catch (error) {
       return res.status(500).json({ error: 'Erro interno.', details: error.message });
