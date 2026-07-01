@@ -29,3 +29,5 @@ npm run dev --prefix backend   # instala deps do backend
 - **Multiplos usuarios com admin** — tela de admin para gerenciar usuarios e tipos de atividade
 - **Refresh token** — renovar JWT automaticamente sem pedir login novamente
 - **Testes automatizados** — cobertura basica de controllers com Jest ou Vitest
+- **Integraçao com Outros Times** — Poder organizar e ver tasks de outros times como gestor
+- **Notificaçoes e Gerenciamento do Time** — Poder melhorar o monitoramento e gerenciamento diario e semanal com a priorizaçao de tarefas que entreguem maior valor
