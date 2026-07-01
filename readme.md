@@ -7,6 +7,8 @@ Aplicacao de gerenciamento de tarefas com autenticacao, CRUD completo e atualiza
 ## Inicio rapido
 
 ```bash
+# Backend
+copiar o .env e adicionar as variaveis obrigatorias, frontend aceitando porta 3001 localhost -- alterar
 # Na raiz do projeto (Desafio1/)
 npm install
 npm run dev --prefix backend   # instala deps do backend
